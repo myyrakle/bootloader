@@ -8,7 +8,7 @@ mov ax, 0xB800
 mov	es, ax
 
 ;배경 지우기
-mov ax, [Background]
+mov ax, 0x00
 mov bx, 0
 mov cx, 80*25*2
 CLS:
