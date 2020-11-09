@@ -7,15 +7,6 @@ org	0x7C00
 mov ax, 0xB800
 mov	es, ax
 
-;배경 지우기
-mov ax, [Background]
-mov bx, 0
-mov cx, 80*25*2
-CLS:
-    mov [es:bx], ax
-    add bx, 1
-    loop CLS
-
 ; 글자 색 설정
 mov	ah, 0x04
 
