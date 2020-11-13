@@ -15,7 +15,7 @@ jmp $+2
 nop
 nop
  
-jmp 0x08:Entry32
+jmp codeDescriptor:Entry32
  
 ;   32비트 엔트리
 [bits 32]
@@ -31,11 +31,11 @@ Entry32:
     mov esp, 0x9FFFF
  
     ; es 레지스터에 비디오 디스크립터 저장
-    mov ax, 0x18
+    mov ax, videoDescriptor
     mov es, ax
  
     ; 문자 출력
-    mov ah, 0x09
+    mov ah, 0x09; 색깔
     mov al, 'P'
     mov [es:0x0000], ax
     mov al, 'R'
