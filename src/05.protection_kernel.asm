@@ -10,7 +10,8 @@ cli ; 플래그 삭제
 mov eax, cr0
 or eax, 1
 mov cr0, eax
- 
+
+; 파이프라이닝으로 남아있을 수 있는 16비트 크기의 명령어 정리
 jmp $+2
 nop
 nop
