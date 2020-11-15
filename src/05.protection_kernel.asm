@@ -4,7 +4,7 @@ org 0x8000
 xor ax, ax
 lgdt [gdtr]  ; gdt 로드 명령
 
-cli ; 플래그 삭제
+cli ; 플래그 초기화
 
 ; 32비트 보호모드 스위치 
 mov eax, cr0
