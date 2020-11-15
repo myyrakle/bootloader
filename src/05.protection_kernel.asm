@@ -16,9 +16,10 @@ jmp $+2
 nop
 nop
  
+; 실질적인 로직인 Entry32 부분으로 점프 
 jmp codeDescriptor:Entry32
  
-;   32비트 엔트리
+; 32비트 엔트리
 [bits 32]
 Entry32:
     ; 세그먼트 레지스터 초기화
