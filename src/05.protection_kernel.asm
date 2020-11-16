@@ -4,7 +4,7 @@ org 0x8000
 xor ax, ax
 lgdt [gdtr]  ; gdt 로드 명령
 
-cli ; 플래그 초기화
+cli ; 인터럽트 막음. 전환중에 인터럽트가 걸리면 죽을수도 있음.
 
 ; 32비트 보호모드 스위치 
 mov eax, cr0
