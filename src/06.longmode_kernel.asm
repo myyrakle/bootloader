@@ -8,20 +8,33 @@ cli ; 플래그 초기화
 
 ; 32비트 보호모드 스위치 
 mov eax, cr0
-or eax, 01111111111111111111111111111111b
+or eax, 1
 mov cr0, eax
 
 ; 파이프라이닝으로 남아있을 수 있는 16비트 크기의 명령어 정리
 jmp $+2
 nop
 nop
+
+; 64비트 서브모드 스위치 
+mov eax, cr0
+or eax, 1<<31
+mov cr0, eax
+
+mov eax, cr4
+or eax, 1<<5
+mov cr4, eax
+
+mov eax, efer
+or eax, 1<<8
+mov efer, eax
  
-; 실질적인 로직인 Entry32 부분으로 점프 
-jmp codeDescriptor:Entry32
+; 실질적인 로직인 Entry64 부분으로 점프 
+jmp codeDescriptor:Entry64
  
 ; 64비트 엔트리
 [bits 64]
-Entry32:
+Entry64:
     ; 세그먼트 레지스터 초기화
     mov bx, dataDescriptor
     mov ds, bx
@@ -62,7 +75,7 @@ gdtr:
     dd gdt ; GDT의 베이스 어드레스
 gdt:
 ; NULL 디스크립터
-nullDescriptor  equ 0x00
+nullDescriptor  equ $-gdt
     dw 0
     dw 0
     db 0
@@ -70,7 +83,7 @@ nullDescriptor  equ 0x00
     db 0
     db 0
 ; 코드 디스크립터
-codeDescriptor  equ 0x08
+codeDescriptor  equ $-gdt
     dw 0xFFFF  ; limit:0xFFFF
     dw 0x0000  ; base 0~15 : 0
     db 0x00    ; base 16~23: 0
@@ -78,7 +91,7 @@ codeDescriptor  equ 0x08
     db 0xCF    ; G:1, D:1, limit:0xF
     db 0x00    ; base 24~32: 0
 ; 데이터 디스크립터
-dataDescriptor  equ 0x10
+dataDescriptor  equ $-gdt
     dw 0xFFFF  ; limit 0xFFFF
     dw 0x0000  ; base 0~15 : 0
     db 0x00    ; base 16~23: 0
@@ -86,7 +99,7 @@ dataDescriptor  equ 0x10
     db 0xCF    ; G:1, D:1, limit:0xF
     db 0x00    ; base 24~32: 0
 ; 비디오 디스크립터
-videoDescriptor equ 0x18
+videoDescriptor equ $-gdt
     dw 0xFFFF  ; limit 0xFFFF
     dw 0x8000  ; base 0~15 : 0x8000
     db 0x0B    ; base 16~23: 0x0B
