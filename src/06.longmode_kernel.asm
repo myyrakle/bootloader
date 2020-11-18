@@ -4,7 +4,7 @@ org 0x8000
 xor ax, ax
 lgdt [gdtr]  ; gdt 로드 명령
 
-cli ; 플래그 초기화
+cli ; 인터럽트 막음. 전환중에 인터럽트가 걸리면 죽을수도 있음.
 
 ; 32비트 보호모드 스위치 
 mov eax, cr0
@@ -28,6 +28,8 @@ mov cr4, eax
 mov eax, efer
 or eax, 1<<8
 mov efer, eax
+
+lgdt [gdtr64]  ; gdt 로드 명령
  
 ; 실질적인 로직인 Entry64 부분으로 점프 
 jmp codeDescriptor:Entry64
@@ -67,7 +69,7 @@ Entry64:
     mov [es:0x000C], ax
  
     jmp $
- 
+
 
 ; GDT 정의
 gdtr:
@@ -107,5 +109,44 @@ videoDescriptor equ $-gdt
     db 0xCF    ; G:1, D:1, limit:0xF
     db 0x00    ; base 24~32: 0
 gdt_end:
+
+; GDT64 정의
+gdtr64:
+    dw gdt64_end - gdt64 - 1 ; GDT의 limit
+    dd gdt64 ; GDT의 베이스 어드레스
+gdt64:
+; NULL 디스크립터
+nullDescriptor64 equ $-gdt64
+    dw 0xFFFF
+    dw 0
+    db 0
+    db 0
+    db 0
+    db 0
+; 코드 디스크립터
+codeDescriptor64  equ $-gdt64
+    dw 0                         ; Limit (low).
+    dw 0                         ; Base (low).
+    db 0                         ; Base (middle)
+    db 10011010b                 ; Access (exec/read).
+    db 10101111b                 ; Granularity, 64 bits flag, limit19:16.
+    db 0    
+; 데이터 디스크립터
+dataDescriptor64  equ $-gdt64
+    dw 0                         ; Limit (low).
+    dw 0                         ; Base (low).
+    db 0                         ; Base (middle)
+    db 10010010b                 ; Access (read/write).
+    db 00000000b                 ; Granularity.
+    db 0             
+; 비디오 디스크립터
+videoDescriptor64 equ $-gdt64
+    dw 0xFFFF  ; limit 0xFFFF
+    dw 0x8000  ; base 0~15 : 0x8000
+    db 0x0B    ; base 16~23: 0x0B
+    db 0x92    ; P:1, DPL:0, data, readable, writable
+    db 0xCF    ; G:1, D:1, limit:0xF
+    db 0x00    ; base 24~32: 0
+gdt64_end:
 
 times 512-($-$$) db 0x00
