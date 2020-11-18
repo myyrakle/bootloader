@@ -8,7 +8,7 @@ cli ; 플래그 초기화
 
 ; 32비트 보호모드 스위치 
 mov eax, cr0
-or eax, 1
+or eax, 01111111111111111111111111111111b
 mov cr0, eax
 
 ; 파이프라이닝으로 남아있을 수 있는 16비트 크기의 명령어 정리
@@ -19,8 +19,8 @@ nop
 ; 실질적인 로직인 Entry32 부분으로 점프 
 jmp codeDescriptor:Entry32
  
-; 32비트 엔트리
-[bits 32]
+; 64비트 엔트리
+[bits 64]
 Entry32:
     ; 세그먼트 레지스터 초기화
     mov bx, dataDescriptor
